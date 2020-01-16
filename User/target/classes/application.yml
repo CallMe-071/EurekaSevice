@@ -1,0 +1,29 @@
+server:
+  port: 8081
+
+eureka:
+  client.service-url:
+    defaultZone: http://localhost:8080/eureka
+  instance:
+    instance-id: ${spring.application.name}:${vcap.application.instance_id:${server.port}}
+    prefer-ip-address: true
+    appname: user
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/CallMe?serverTimezone=UTC&useSSL=false&autoReconnect=true&tinyInt1isBit=false&useUnicode=true&characterEncoding=utf8
+    username: root
+    password: 1234
+  application:
+    name: user
+
+#1.  src 路径下的文件 在编译后都会放到 WEB-INF/classes 路径下。默认classpath 就是指这里。
+#2. 用maven构建 项目时，resources 目录就是默认的classpath
+
+#classpath：只会到你的class路径中查找找文件;
+#classpath*：不仅包含class路径，还包括jar文件中(class路径)进行查找   classpath*需要遍历所有的classpath，所以加载速度是很慢的。
+
+#   通配符*    匹配0个或多个字符串   /test/*   在test文件下一级目录，例如/test/a可以访问但/test/a/a就不允许访问了
+#   通配符**   匹配0或多个路径      /test/**  所有子目录都可以访问
+mybatis:
+  mapper-locations: classpath:*.xml
+  type-aliases-package: root.entity

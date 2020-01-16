@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="root.repository.UserMapper">
+
+
+    <insert id="addUser" parameterType="java.lang.String">
+        insert into users (name,nick) values (#{name},#{nick})
+    </insert>
+
+    <delete id="deleteUser" parameterType="java.lang.Long">
+        delete from users where id = #{id}
+    </delete>
+
+    <select id="selectById" resultType="root.entity.User">
+        select * from users where id = #{id}
+    </select>
+
+    <update id="updateUser">
+        update users set name = #{name} where id = #{id}
+    </update>
+
+    <select id="findAll" resultType="root.entity.User">
+        select * from users
+    </select>
+
+    <select id="getSum" resultType="java.lang.Integer">
+        select count(*) from users
+    </select>
+
+    <select id="findByPage" resultType="root.entity.User">
+        select * from users where name like CONCAT('%',#{word},'%') and age &lt; #{age} limit #{page},#{pageSize}
+    </select>
+
+    <select id="getByTableSum" resultType="java.lang.Integer">
+        select count(*)
+        from users
+        left join course on users.courseId = course.courseId
+        where age &lt; #{age} and name like concat('%',#{word},'%')
+    </select>
+
+<!--如果使用resultType来设置返回结果的类型，需要在SQL中为所有列名和属性名不一致的列设置别名，通过设置别名使最终的查询结果和resultType指定对象的属性名保持一致，进而实现自动映射.-->
+    <select id="findByRTable" resultType="root.entity.UserDetail">
+        select users.id,users.name,users.age,users.nick,users.avatar,users.phone,users.password,users.courseId,course.courseName,course.score
+        from users
+        left join course on users.courseId = course.courseId
+        where age &lt; #{age} and name like concat('%',#{word},'%')
+        limit #{page},#{pageSize}
+    </select>
+
+    <resultMap id="user" type="root.entity.User">
+        <result property="id" column="id"></result>
+        <result property="name" column="name"></result>
+        <result property="age" column="age"></result>
+        <result property="nick" column="nick"></result>
+        <result property="avatar" column="avatar"></result>
+        <result property="phone" column="phone"></result>
+        <result property="password" column="password"></result>
+        <association property="course" javaType="root.entity.Course">
+            <id property="courseId" column="courseId"></id>
+            <result property="courseName" column="courseName"></result>
+            <result property="score" column="score"></result>
+        </association>
+    </resultMap>
+
+    <select id="get" resultMap="user">
+        select users.id,users.name,users.age,users.nick,users.avatar,users.phone,users.password,users.courseId,course.courseName,course.score
+        from users
+        left join course on users.courseId = course.courseId
+    </select>
+
+
+</mapper>
